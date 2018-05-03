@@ -6,7 +6,7 @@ public enum RSAKeySize {
 
     private final int size;
 
-    private RSAKeySize(int size) {
+    RSAKeySize(int size) {
         this.size = size;
     }
 

@@ -1,30 +1,17 @@
 package de.lheinrich.lhdef;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.*;
 import java.util.Arrays;
-import javax.crypto.KeyAgreement;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 public class Crypter {
 
     public static byte[] encrypt(String algorithm, byte[] value, Key key) {
         try {
-              var cipher = Cipher.getInstance(algorithm);
+            var cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.ENCRYPT_MODE, key);
             return cipher.doFinal(value);
         } catch (InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
@@ -34,7 +21,7 @@ public class Crypter {
 
     public static byte[] decrypt(String algorithm, byte[] value, Key key) {
         try {
-              var cipher = Cipher.getInstance(algorithm);
+            var cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.DECRYPT_MODE, key);
             return cipher.doFinal(value);
         } catch (InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
@@ -70,7 +57,7 @@ public class Crypter {
 
     public static SecretKey generateAESKey(AESKeySize keySize) {
         try {
-              var keyGenerator = KeyGenerator.getInstance("AES");
+            var keyGenerator = KeyGenerator.getInstance("AES");
             keyGenerator.init(keySize.getSize());
             return keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException ex) {
@@ -80,7 +67,7 @@ public class Crypter {
 
     public static KeyPair generateRSAKeyPair(RSAKeySize keySize) {
         try {
-              var keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            var keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(keySize.getSize());
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException ex) {
@@ -90,7 +77,7 @@ public class Crypter {
 
     public static KeyPair generateECKeyPair(ECKeySize keySize) {
         try {
-              var keyPairGenerator = KeyPairGenerator.getInstance("EC");
+            var keyPairGenerator = KeyPairGenerator.getInstance("EC");
             keyPairGenerator.initialize(keySize.getSize());
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException ex) {
@@ -100,11 +87,11 @@ public class Crypter {
 
     public static SecretKey generateEC(String algorithm, String hashAlgorithm, AESKeySize keySize, PrivateKey privateKey, PublicKey publicKey) {
         try {
-              var keyAgreement = KeyAgreement.getInstance("ECDH");
+            var keyAgreement = KeyAgreement.getInstance("ECDH");
             keyAgreement.init(privateKey);
             keyAgreement.doPhase(publicKey, true);
-              var hash = hash(hashAlgorithm, keyAgreement.generateSecret());
-              var rawKey = Arrays.copyOfRange(hash, hash.length - keySize.getSub(), hash.length);
+            var hash = hash(hashAlgorithm, keyAgreement.generateSecret());
+            var rawKey = Arrays.copyOfRange(hash, hash.length - keySize.getSub(), hash.length);
             return new SecretKeySpec(rawKey, 0, rawKey.length, algorithm);
         } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException ex) {
             return null;
@@ -113,9 +100,9 @@ public class Crypter {
 
     public static String hash(String algorithm, String value) {
         try {
-              var md = MessageDigest.getInstance(algorithm);
+            var md = MessageDigest.getInstance(algorithm);
             md.update(value.getBytes(StandardCharsets.UTF_8));
-              var digest = md.digest();
+            var digest = md.digest();
             return String.format("%064x", new java.math.BigInteger(1, digest));
         } catch (NoSuchAlgorithmException ex) {
             return null;
@@ -124,7 +111,7 @@ public class Crypter {
 
     public static byte[] hash(String algorithm, byte[] value) {
         try {
-              var md = MessageDigest.getInstance(algorithm);
+            var md = MessageDigest.getInstance(algorithm);
             md.update(value);
             return md.digest();
         } catch (NoSuchAlgorithmException ex) {

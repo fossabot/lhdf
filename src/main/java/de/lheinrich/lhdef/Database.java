@@ -5,12 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Database {
 
@@ -39,13 +34,13 @@ public class Database {
             if (!dbFile.exists()) {
                 Files.write(dbFile.toPath(), "".getBytes(), StandardOpenOption.CREATE);
             }
-              var dbContent = new String(Files.readAllBytes(dbFile.toPath()), StandardCharsets.UTF_8).replace(System.lineSeparator(), "");
+            var dbContent = new String(Files.readAllBytes(dbFile.toPath()), StandardCharsets.UTF_8).replace(System.lineSeparator(), "");
             for (String line : dbContent.split("-")) {
                 if (line.trim().equals("")) {
                     continue;
                 }
 
-                  var keyValue = line.split("#", 2);
+                var keyValue = line.split("#", 2);
                 values.put(new String(Base64.getDecoder().decode(keyValue[0]), StandardCharsets.UTF_8), new String(Base64.getDecoder().decode(keyValue[1]), StandardCharsets.UTF_8));
             }
         } catch (IOException ex) {
@@ -74,7 +69,7 @@ public class Database {
 
     private void doWrite() {
         if (values.hashCode() != lastMap) {
-              var builder = new StringBuilder();
+            var builder = new StringBuilder();
             values.entrySet().iterator().forEachRemaining((entry) -> {
                 builder.append(Base64.getEncoder().encodeToString(entry.getKey().getBytes()));
                 builder.append("#");
@@ -97,9 +92,7 @@ public class Database {
 
     public void remove(String key) {
         if (isMasterDatabase) {
-            if (values.containsKey(key)) {
-                values.remove(key);
-            }
+            values.remove(key);
         } else {
             DATABASES.get(dbFile).remove(key);
         }
@@ -107,9 +100,7 @@ public class Database {
 
     public void update(String key, Object value) {
         if (isMasterDatabase) {
-            if (values.containsKey(key)) {
-                values.remove(key);
-            }
+            values.remove(key);
             values.put(key, String.valueOf(value));
         } else {
             DATABASES.get(dbFile).update(key, value);

@@ -12,7 +12,7 @@ public class FileTools {
 
     public static String loadConfigFile(String fileName) {
         try {
-              var realFilePath = new File(fileName).toPath();
+            var realFilePath = new File(fileName).toPath();
             if (Files.exists(realFilePath)) {
                 return new String(Files.readAllBytes(realFilePath), StandardCharsets.UTF_8);
             }
@@ -23,8 +23,8 @@ public class FileTools {
     }
 
     public static String loadResourceFile(String fileName) {
-          var fileContent = "";
-          var resourceName = "/" + fileName;
+        var fileContent = "";
+        var resourceName = "/" + fileName;
         InputStream stream = null;
         OutputStream resStreamOut = null;
         String jarFolder;
@@ -37,8 +37,8 @@ public class FileTools {
                 throw new IOException("Cannot get resource \"" + resourceName + "\" from Jar file.");
             }
 
-              var readBytes = stream.available();
-               var buffer = new byte[readBytes];
+            var readBytes = stream.available();
+            var buffer = new byte[readBytes];
             stream.read(buffer, 0, readBytes);
 
             fileContent = new String(buffer, StandardCharsets.UTF_8);

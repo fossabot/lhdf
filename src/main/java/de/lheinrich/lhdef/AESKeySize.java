@@ -7,7 +7,7 @@ public enum AESKeySize {
     private final int size;
     private final int sub;
 
-    private AESKeySize(int size, int sub) {
+    AESKeySize(int size, int sub) {
         this.size = size;
         this.sub = sub;
     }

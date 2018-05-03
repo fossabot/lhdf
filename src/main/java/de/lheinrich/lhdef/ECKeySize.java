@@ -6,7 +6,7 @@ public enum ECKeySize {
 
     private final int size;
 
-    private ECKeySize(int size) {
+    ECKeySize(int size) {
         this.size = size;
     }
 

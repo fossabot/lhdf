@@ -3,6 +3,7 @@ package de.lheinrich.lhdef;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class Config {
 
     private Map<String, String> config = new HashMap<>();
@@ -12,7 +13,7 @@ public class Config {
             if (line.trim().equals("")) {
                 continue;
             }
-              var keyValue = line.split("=");
+            var keyValue = line.split("=");
             this.config.put(keyValue[0], keyValue[1]);
         }
 
@@ -20,7 +21,7 @@ public class Config {
             if (line.trim().equals("")) {
                 continue;
             }
-              var keyValue = line.split("=");
+            var keyValue = line.split("=");
             if (!this.config.containsKey(keyValue[0])) {
                 this.config.put(keyValue[0], keyValue[1]);
             }
