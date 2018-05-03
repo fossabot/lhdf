@@ -1,3 +1,7 @@
 # lhdef
+
 LHeinrich.de Framework
-Order Programming: https://www.lheinrich.de/
+
+Order Programming:
+ - E-Mail: lheinrich@lheinrich.de
+ - Website: https://www.lheinrich.de
