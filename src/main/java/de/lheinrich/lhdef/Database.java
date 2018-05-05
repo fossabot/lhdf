@@ -35,7 +35,7 @@ public class Database {
                 Files.write(dbFile.toPath(), "".getBytes(), StandardOpenOption.CREATE);
             }
             var dbContent = new String(Files.readAllBytes(dbFile.toPath()), StandardCharsets.UTF_8).replace(System.lineSeparator(), "");
-            for (String line : dbContent.split("-")) {
+            for (var line : dbContent.split("-")) {
                 if (line.trim().equals("")) {
                     continue;
                 }

@@ -9,7 +9,7 @@ public class Config {
     private Map<String, String> config = new HashMap<>();
 
     public Config(String config, String backup) {
-        for (String line : config.split(System.lineSeparator())) {
+        for (var line : config.split(System.lineSeparator())) {
             if (line.trim().equals("")) {
                 continue;
             }
@@ -17,7 +17,7 @@ public class Config {
             this.config.put(keyValue[0], keyValue[1]);
         }
 
-        for (String line : backup.split(System.lineSeparator())) {
+        for (var line : backup.split(System.lineSeparator())) {
             if (line.trim().equals("")) {
                 continue;
             }

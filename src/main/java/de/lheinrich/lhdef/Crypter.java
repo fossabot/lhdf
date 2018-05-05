@@ -32,7 +32,7 @@ public class Crypter {
     public static byte[] toByteArray(Serializable object) {
         try {
             byte[] result;
-            try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutput out = new ObjectOutputStream(bos)) {
+            try (var bos = new ByteArrayOutputStream(); var out = new ObjectOutputStream(bos)) {
                 out.writeObject(object);
                 out.flush();
                 result = bos.toByteArray();
@@ -46,7 +46,7 @@ public class Crypter {
     public static Object toObject(byte[] bytes) {
         try {
             Object object;
-            try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes); ObjectInput in = new ObjectInputStream(bis)) {
+            try (var bis = new ByteArrayInputStream(bytes); var in = new ObjectInputStream(bis)) {
                 object = in.readObject();
             }
             return object;

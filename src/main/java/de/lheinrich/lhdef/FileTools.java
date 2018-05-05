@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -27,10 +26,8 @@ public class FileTools {
         var resourceName = "/" + fileName;
         InputStream stream = null;
         OutputStream resStreamOut = null;
-        String jarFolder;
 
         try {
-            jarFolder = new File(FileTools.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath()).getParentFile().getPath().replace('\\', '/');
             stream = FileTools.class.getResourceAsStream(resourceName);
 
             if (stream == null) {
@@ -42,7 +39,7 @@ public class FileTools {
             stream.read(buffer, 0, readBytes);
 
             fileContent = new String(buffer, StandardCharsets.UTF_8);
-        } catch (IOException | URISyntaxException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
             try {
