@@ -1,9 +1,10 @@
 package de.lheinrich.lhdef.sql;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /*
  * Copyright (c) 2018 Lennart Heinrich
@@ -30,7 +31,7 @@ import java.util.List;
 public class Transaction {
 
     private final MySQL mysql;
-    private final List<PreparedStatement> statements = new ArrayList<>();
+    private final List<Map.Entry<String, Object[]>> statements = new ArrayList<>();
 
     public Transaction(MySQL mysql) {
         this.mysql = mysql;
@@ -38,7 +39,7 @@ public class Transaction {
 
     public void add(String query, Object... args) {
         try {
-            this.statements.add(this.mysql.prepareStatement(query, args));
+            this.statements.add(new AbstractMap.SimpleEntry(query, args));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -46,13 +47,12 @@ public class Transaction {
 
     public void commit() {
         try {
-            this.mysql.getConnection().setAutoCommit(false);
-
-            for (PreparedStatement update : statements)
-                update.executeUpdate();
+            for (var entry : statements) {
+                var statement = this.mysql.prepareTransactionStatement(entry.getKey(), entry.getValue());
+                statement.executeUpdate();
+            }
 
             this.mysql.getConnection().commit();
-            this.mysql.getConnection().setAutoCommit(true);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }

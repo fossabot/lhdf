@@ -32,6 +32,7 @@ public class MySQL {
     private String username;
     private String password;
     private Connection connection;
+    private Connection transactionConnection;
 
     public MySQL(String host, int port, String database, String username, String password) {
         this.host = host;
@@ -46,6 +47,10 @@ public class MySQL {
             this.connection = DriverManager.getConnection(
                     "jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + "?autoReconnect=true&useSSL=false&allowMultiQueries=true",
                     this.username, this.password);
+            this.transactionConnection = DriverManager.getConnection(
+                    "jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + "?autoReconnect=true&useSSL=false&allowMultiQueries=true",
+                    this.username, this.password);
+            this.transactionConnection.setAutoCommit(false);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -54,6 +59,7 @@ public class MySQL {
     public void disconnect() {
         try {
             this.connection.close();
+            this.transactionConnection.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -61,7 +67,7 @@ public class MySQL {
 
     public boolean isConnected() {
         try {
-            return this.connection != null && !this.connection.isClosed();
+            return this.connection != null && !this.connection.isClosed() && this.transactionConnection != null && !this.transactionConnection.isClosed();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -72,8 +78,20 @@ public class MySQL {
         return connection;
     }
 
-    protected PreparedStatement prepareStatement(String query, Object... args) throws SQLException {
+    public Connection getTransactionConnection() {
+        return connection;
+    }
+
+    private PreparedStatement prepareStatement(String query, Object... args) throws SQLException {
         var preparedStatement = getConnection().prepareStatement(query);
+        for (var i = 1; i <= args.length; i++)
+            preparedStatement.setObject(i, args[i - 1]);
+
+        return preparedStatement;
+    }
+
+    protected PreparedStatement prepareTransactionStatement(String query, Object... args) throws SQLException {
+        var preparedStatement = getTransactionConnection().prepareStatement(query);
         for (var i = 1; i <= args.length; i++)
             preparedStatement.setObject(i, args[i - 1]);
 

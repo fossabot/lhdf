@@ -31,13 +31,6 @@
         </repository>
     </distributionManagement>
 
-    <repositories>
-        <repository>
-            <id>lheinrich</id>
-            <url>https://mvn.lheinrich.de/repository/public/</url>
-        </repository>
-    </repositories>
-
     <build>
         <resources>
             <resource>
