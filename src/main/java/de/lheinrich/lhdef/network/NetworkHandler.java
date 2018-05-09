@@ -1,4 +1,12 @@
-package de.lheinrich.lhdef;
+package de.lheinrich.lhdef.network;
+
+import de.lheinrich.lhdef.Crypter;
+
+import javax.crypto.SecretKey;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 /*
  * Copyright (c) 2018 Lennart Heinrich
@@ -22,17 +30,35 @@ package de.lheinrich.lhdef;
  * SOFTWARE.
  */
 
-public enum AESKeySize {
+public abstract class NetworkHandler {
 
-    LOW(128), MEDIUM(192), HIGH(256);
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+    private SecretKey key;
 
-    private final int size;
-
-    AESKeySize(int size) {
-        this.size = size;
+    protected void init(ObjectInputStream in, ObjectOutputStream out, SecretKey key) {
+        this.in = in;
+        this.out = out;
+        this.key = key;
     }
 
-    public int getSize() {
-        return this.size;
+    public void write(Serializable object) {
+        try {
+            this.out.writeObject(Crypter.encrypt("AES", Crypter.toByteArray(object), this.key));
+            this.out.flush();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
+
+    public Object read() {
+        try {
+            return Crypter.toObject(Crypter.decrypt("AES", (byte[]) this.in.readObject(), this.key));
+        } catch (IOException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    public abstract void handle();
 }

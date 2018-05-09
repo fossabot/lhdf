@@ -77,44 +77,44 @@ public class Crypter {
         }
     }
 
-    public static SecretKey generateAESKey(AESKeySize keySize) {
+    public static SecretKey generateAESKey(int keySize) {
         try {
             var keyGenerator = KeyGenerator.getInstance("AES");
-            keyGenerator.init(keySize.getSize());
+            keyGenerator.init(keySize);
             return keyGenerator.generateKey();
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
     }
 
-    public static KeyPair generateRSAKeyPair(RSAKeySize keySize) {
+    public static KeyPair generateRSAKeyPair(int keySize) {
         try {
             var keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(keySize.getSize());
+            keyPairGenerator.initialize(keySize);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
     }
 
-    public static KeyPair generateECKeyPair(ECKeySize keySize) {
+    public static KeyPair generateECKeyPair(int keySize) {
         try {
             var keyPairGenerator = KeyPairGenerator.getInstance("EC");
-            keyPairGenerator.initialize(keySize.getSize());
+            keyPairGenerator.initialize(keySize);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException ex) {
             return null;
         }
     }
 
-    public static SecretKey generateEC(String algorithm, String hashAlgorithm, AESKeySize keySize, PrivateKey privateKey, PublicKey publicKey) {
+    public static SecretKey generateEC(String hashAlgorithm, int keySize, PrivateKey privateKey, PublicKey publicKey) {
         try {
             var keyAgreement = KeyAgreement.getInstance("ECDH");
             keyAgreement.init(privateKey);
             keyAgreement.doPhase(publicKey, true);
             var hash = hash(hashAlgorithm, keyAgreement.generateSecret());
-            var rawKey = Arrays.copyOfRange(hash, hash.length - keySize.getSub(), hash.length);
-            return new SecretKeySpec(rawKey, 0, rawKey.length, algorithm);
+            var rawKey = Arrays.copyOfRange(hash, hash.length - keySize / 8, hash.length);
+            return new SecretKeySpec(rawKey, 0, rawKey.length, "AES");
         } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException ex) {
             return null;
         }
