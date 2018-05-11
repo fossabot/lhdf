@@ -1,5 +1,7 @@
 package de.lheinrich.lhdef.sql;
 
+import de.lheinrich.lhdef.FileTools;
+
 import java.sql.*;
 
 /*
@@ -34,7 +36,7 @@ public class MySQL {
     private Connection connection;
     private Connection transactionConnection;
 
-    public MySQL(String host, int port, String database, String username, String password) {
+    public void login(String host, int port, String database, String username, String password) {
         this.host = host;
         this.port = port;
         this.database = database;
@@ -117,5 +119,9 @@ public class MySQL {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public static String getQuery(String name) {
+        return FileTools.loadResourceFile("sql/" + name + ".sql");
     }
 }

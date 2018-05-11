@@ -50,11 +50,15 @@ public class Transaction {
             for (var entry : statements) {
                 var statement = this.mysql.prepareTransactionStatement(entry.getKey(), entry.getValue());
                 statement.executeUpdate();
+                statement.close();
             }
-
             this.mysql.getConnection().commit();
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            try {
+                this.mysql.getConnection().rollback();
+            } catch (SQLException exRollback) {
+                exRollback.printStackTrace();
+            }
         }
     }
 }
