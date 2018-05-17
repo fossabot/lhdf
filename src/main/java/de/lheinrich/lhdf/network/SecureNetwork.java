@@ -1,8 +1,8 @@
-package de.lheinrich.lhdef.network;
+package de.lheinrich.lhdf.network;
 
-import de.lheinrich.lhdef.AESKeySize;
-import de.lheinrich.lhdef.Crypter;
-import de.lheinrich.lhdef.ECKeySize;
+import de.lheinrich.lhdf.security.AESKeySize;
+import de.lheinrich.lhdf.security.Crypter;
+import de.lheinrich.lhdf.security.ECKeySize;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;

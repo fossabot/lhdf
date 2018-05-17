@@ -1,4 +1,4 @@
-package de.lheinrich.lhdef;
+package de.lheinrich.lhdf.security;
 
 /*
  * Copyright (c) 2018 Lennart Heinrich
@@ -22,13 +22,13 @@ package de.lheinrich.lhdef;
  * SOFTWARE.
  */
 
-public enum ECKeySize {
+public enum AESKeySize {
 
-    LOWEST(160), LOW(224), MEDIUM(256), HIGH(384), HIGHEST(521);
+    LOW(128), MEDIUM(192), HIGH(256);
 
     private final int size;
 
-    ECKeySize(int size) {
+    AESKeySize(int size) {
         this.size = size;
     }
 

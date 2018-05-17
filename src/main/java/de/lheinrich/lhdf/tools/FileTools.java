@@ -1,4 +1,4 @@
-package de.lheinrich.lhdef;
+package de.lheinrich.lhdf.tools;
 
 import java.io.File;
 import java.io.IOException;

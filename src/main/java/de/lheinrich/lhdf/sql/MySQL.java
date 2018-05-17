@@ -1,6 +1,6 @@
-package de.lheinrich.lhdef.sql;
+package de.lheinrich.lhdf.sql;
 
-import de.lheinrich.lhdef.FileTools;
+import de.lheinrich.lhdf.tools.FileTools;
 
 import java.sql.*;
 

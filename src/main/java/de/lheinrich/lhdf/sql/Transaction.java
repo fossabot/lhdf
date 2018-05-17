@@ -1,4 +1,4 @@
-package de.lheinrich.lhdef.sql;
+package de.lheinrich.lhdf.sql;
 
 import java.sql.SQLException;
 import java.util.AbstractMap;

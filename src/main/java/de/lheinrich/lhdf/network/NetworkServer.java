@@ -1,4 +1,4 @@
-package de.lheinrich.lhdef.network;
+package de.lheinrich.lhdf.network;
 
 import javax.crypto.SecretKey;
 

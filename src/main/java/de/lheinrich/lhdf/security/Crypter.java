@@ -1,4 +1,4 @@
-package de.lheinrich.lhdef;
+package de.lheinrich.lhdf.security;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;

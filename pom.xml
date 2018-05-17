@@ -4,14 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.lheinrich</groupId>
-    <artifactId>lhdef</artifactId>
+    <artifactId>lhdf</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>https://www.lheinrich.de/static/public/license/LICENSE.txt</url>
+            <url>https://lheinrich.de/static/public/license/LICENSE.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -19,8 +19,8 @@
     <developers>
         <developer>
             <name>Lennart Heinrich</name>
-            <email>admin@lheinrich.de</email>
-            <url>https://www.lheinrich.de</url>
+            <email>lheinrich@lheinrich.de</email>
+            <url>https://lheinrich.de</url>
         </developer>
     </developers>
 
@@ -32,6 +32,7 @@
     </distributionManagement>
 
     <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
         <resources>
             <resource>
                 <directory>.</directory>
@@ -39,7 +40,20 @@
                     <include>LICENSE</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/**</include>
+                </includes>
+            </resource>
         </resources>
+
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -69,14 +83,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-            <version>2.2.3</version>
-        </dependency>
-    </dependencies>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

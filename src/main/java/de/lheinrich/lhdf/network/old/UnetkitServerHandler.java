@@ -1,11 +1,5 @@
-package de.lheinrich.lhdef.network;
+package de.lheinrich.lhdf.network.old;
 
-import de.lheinrich.lhdef.Crypter;
-
-import javax.crypto.SecretKey;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /*
@@ -30,35 +24,13 @@ import java.io.Serializable;
  * SOFTWARE.
  */
 
-public abstract class NetworkHandler {
+public abstract class UnetkitServerHandler {
 
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
-    private SecretKey key;
-
-    protected void init(ObjectInputStream in, ObjectOutputStream out, SecretKey key) {
-        this.in = in;
-        this.out = out;
-        this.key = key;
-    }
-
-    public void write(Serializable object) {
-        try {
-            this.out.writeObject(Crypter.encrypt("AES", Crypter.toByteArray(object), this.key));
-            this.out.flush();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public Object read() {
-        try {
-            return Crypter.toObject(Crypter.decrypt("AES", (byte[]) this.in.readObject(), this.key));
-        } catch (IOException | ClassNotFoundException ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-
-    public abstract void handle();
+    /**
+     * Processes a request
+     *
+     * @param object Object sent by client
+     * @return Serializable Object processed in method
+     */
+    public abstract Serializable process(Object object);
 }

@@ -1,4 +1,4 @@
-package de.lheinrich.lhdef;
+package de.lheinrich.lhdf.security;
 
 /*
  * Copyright (c) 2018 Lennart Heinrich
@@ -22,13 +22,13 @@ package de.lheinrich.lhdef;
  * SOFTWARE.
  */
 
-public enum RSAKeySize {
+public enum ECKeySize {
 
-    LOWEST(1024), LOW(2048), MEDIUM(3072), HIGH(4096), HIGHEST(8192);
+    LOWEST(160), LOW(224), MEDIUM(256), HIGH(384), HIGHEST(521);
 
     private final int size;
 
-    RSAKeySize(int size) {
+    ECKeySize(int size) {
         this.size = size;
     }
 
