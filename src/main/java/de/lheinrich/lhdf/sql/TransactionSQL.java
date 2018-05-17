@@ -28,13 +28,13 @@ import java.util.Map;
  * SOFTWARE.
  */
 
-public class Transaction {
+public class TransactionSQL {
 
-    private final MySQL mysql;
+    private final ClientSQL clientSQL;
     private final List<Map.Entry<String, Object[]>> statements = new ArrayList<>();
 
-    public Transaction(MySQL mysql) {
-        this.mysql = mysql;
+    public TransactionSQL(ClientSQL mysql) {
+        this.clientSQL = mysql;
     }
 
     public void add(String query, Object... args) {
@@ -46,18 +46,25 @@ public class Transaction {
     }
 
     public void commit() {
+        var connection = this.clientSQL.getSqlTransactionConnection();
         try {
-            for (var entry : statements) {
-                var statement = this.mysql.prepareTransactionStatement(entry.getKey(), entry.getValue());
+            for (var entry : this.statements) {
+                var statement = this.clientSQL.prepareTransactionStatementSQL(connection, entry.getKey(), entry.getValue());
                 statement.executeUpdate();
                 statement.close();
             }
-            this.mysql.getConnection().commit();
+            connection.commit();
         } catch (SQLException ex) {
             try {
-                this.mysql.getConnection().rollback();
+                connection.rollback();
             } catch (SQLException exRollback) {
                 exRollback.printStackTrace();
+            }
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
         }
     }
