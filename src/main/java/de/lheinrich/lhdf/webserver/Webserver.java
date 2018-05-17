@@ -15,7 +15,6 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
@@ -70,15 +69,15 @@ public class Webserver {
         });
         executor = Executors.newFixedThreadPool(threads);
 
-        boolean plain = bindPort != 0;
-        boolean ssl = bindPortSSL != 0;
+        var plain = bindPort != 0;
+        var ssl = bindPortSSL != 0;
 
         if (plain) {
             serverSocket = new ServerSocket(bindPort, maxConnections);
             new Thread(() -> {
                 try {
                     while (serverSocket != null && !serverSocket.isClosed()) {
-                        Socket socket = serverSocket.accept();
+                        var socket = serverSocket.accept();
                         executor.submit(() -> {
                             try {
                                 socket.setSoTimeout(timeout * 1000);
@@ -97,7 +96,7 @@ public class Webserver {
             new Thread(() -> {
                 try {
                     while (sslServerSocket != null && !sslServerSocket.isClosed()) {
-                        SSLSocket socket = (SSLSocket) sslServerSocket.accept();
+                        var socket = (SSLSocket) sslServerSocket.accept();
                         executor.submit(() -> {
                             try {
                                 socket.setSoTimeout(timeout * 1000);
@@ -114,20 +113,20 @@ public class Webserver {
     }
 
     private void handleRequest(Socket socket) {
-        try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())); DataInputStream in = new DataInputStream(socket.getInputStream())) {
-            byte[] raw = new byte[in.available()];
+        try (var out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())); var in = new DataInputStream(socket.getInputStream())) {
+            var raw = new byte[in.available()];
             in.read(raw);
 
             out.write("HTTP/1.1 200 OK\r\n");
 
-            List<String> request = new ArrayList<>();
+            var request = new ArrayList<String>();
             request.addAll(Arrays.asList(new String(raw).split(System.lineSeparator())));
-            Object[] getData = parseGetData(request.get(0));
+            var getData = parseGetData(request.get(0));
 
-            String requestType = (String) getData[0];
-            String handlerName = ((String) getData[1]).toLowerCase();
+            var requestType = (String) getData[0];
+            var handlerName = ((String) getData[1]).toLowerCase();
 
-            Map<String, String> getRequest = (Map<String, String>) getData[2];
+            var getRequest = (Map<String, String>) getData[2];
             WebserverHandler handler;
 
             if (handlers.containsKey(handlerName)) {
@@ -143,19 +142,19 @@ public class Webserver {
                 post_put = parsePostData(request.get(request.size() - 1));
             }
 
-            Map<String, String> headData = parseHeadData(request);
-            Map<String, String> cookies = new TreeMap<>();
-            String cookieName = headData.containsKey("cookie") ? "cookie" : "Cookie";
+            var headData = parseHeadData(request);
+            var cookies = new TreeMap<String, String>();
+            var cookieName = headData.containsKey("cookie") ? "cookie" : "Cookie";
             if (headData.containsKey(cookieName)) {
-                String[] rawCookies = headData.get(cookieName).split(";", 2);
-                for (String rawCookie : rawCookies) {
-                    String[] cookie = rawCookie.split("=", 2);
+                var rawCookies = headData.get(cookieName).split(";", 2);
+                for (var rawCookie : rawCookies) {
+                    var cookie = rawCookie.split("=", 2);
                     cookies.put(cookie[0].trim(), cookie[1]);
                 }
                 headData.remove(cookieName);
             }
 
-            String response = handler.process(getRequest, headData, post_put, cookies, socket.getInetAddress().getHostAddress());
+            var response = handler.process(getRequest, headData, post_put, cookies, socket.getInetAddress().getHostAddress());
 
             out.write("Server: Unetkit (Java)\r\n");
             out.write("Access-Control-Allow-Origin: *\r\n");
@@ -164,8 +163,6 @@ public class Webserver {
             out.write(generateCookies(handler.getCookies()) + "\r\n");
             out.write(response);
             out.flush();
-            in.close();
-            out.close();
         } catch (IOException ex) {
         } finally {
             try {
@@ -196,9 +193,9 @@ public class Webserver {
      * @param handler     WebserverHandler instance
      */
     public void registerHandler(String handlerName, WebserverHandler handler) {
-        handlerName = handlerName.toLowerCase();
-        unregisterHandler(handlerName);
-        handlers.put(handlerName, handler);
+        var handlerNameLower = handlerName.toLowerCase();
+        unregisterHandler(handlerNameLower);
+        handlers.put(handlerNameLower, handler);
     }
 
     /**
@@ -207,27 +204,27 @@ public class Webserver {
      * @param handlerName Name of handler (not "not found" !!!)
      */
     public void unregisterHandler(String handlerName) {
-        handlerName = handlerName.toLowerCase();
-        handlers.remove(handlerName);
+        var handlerNameLower = handlerName.toLowerCase();
+        handlers.remove(handlerNameLower);
     }
 
     private String generateCookies(Map<String, String> cookies) {
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
         cookies.forEach((name, value) -> builder.append("Set-Cookie: ").append(name).append("=").append(value).append("\r\n"));
         return builder.toString();
     }
 
     private SSLServerSocket createSSLServerSocket(int bindPort, int maxConnections, KeyStore keyStore) throws KeyManagementException, NoSuchAlgorithmException, UnrecoverableKeyException, IOException, KeyStoreException {
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        var keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         keyManagerFactory.init(keyStore, "password".toCharArray());
-        KeyManager[] km = keyManagerFactory.getKeyManagers();
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
+        var km = keyManagerFactory.getKeyManagers();
+        var trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
         trustManagerFactory.init(keyStore);
-        TrustManager[] tm = trustManagerFactory.getTrustManagers();
-        SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+        var tm = trustManagerFactory.getTrustManagers();
+        var sslContext = SSLContext.getInstance("TLSv1.2");
         sslContext.init(km, tm, new SecureRandom());
-        SSLServerSocketFactory serverSocketFactory = sslContext.getServerSocketFactory();
-        SSLServerSocket customServerSocket = (SSLServerSocket) serverSocketFactory.createServerSocket(bindPort, maxConnections);
+        var serverSocketFactory = sslContext.getServerSocketFactory();
+        var customServerSocket = (SSLServerSocket) serverSocketFactory.createServerSocket(bindPort, maxConnections);
         customServerSocket.setEnabledProtocols(new String[]{"TLSv1.2"});
         customServerSocket.setEnabledCipherSuites(new String[]{"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"});
         return customServerSocket;
@@ -235,17 +232,17 @@ public class Webserver {
 
     private Object[] parseGetData(String raw) {
         try {
-            String[] splittedRequest = raw.split(" ");
-            String[] preRawRequest = splittedRequest[1].split("\\?", 2);
-            String handlerName = preRawRequest[0].substring(1);
+            var splittedRequest = raw.split(" ");
+            var preRawRequest = splittedRequest[1].split("\\?", 2);
+            var handlerName = preRawRequest[0].substring(1);
 
-            String rawRequest = preRawRequest.length > 1 ? preRawRequest[1] : "";
-            String[] splittedRawRequest = rawRequest.split("&");
+            var rawRequest = preRawRequest.length > 1 ? preRawRequest[1] : "";
+            var splittedRawRequest = rawRequest.split("&");
 
-            Map<String, String> requestMap = new TreeMap<>();
+            var requestMap = new TreeMap<>();
 
-            for (String rawSplittedRawRequest : splittedRawRequest) {
-                String[] splittedSplittedRawRequest = rawSplittedRawRequest.split("=", 2);
+            for (var rawSplittedRawRequest : splittedRawRequest) {
+                var splittedSplittedRawRequest = rawSplittedRawRequest.split("=", 2);
 
                 if (splittedSplittedRawRequest.length >= 2) {
                     requestMap.put(splittedSplittedRawRequest[0], splittedSplittedRawRequest[1]);
@@ -262,7 +259,7 @@ public class Webserver {
 
     private Map<String, String> parseHeadData(List<String> raw) {
         try {
-            Map<String, String> requestMap = new TreeMap<>();
+            var requestMap = new TreeMap<String, String>();
 
             raw.stream().map(line -> line.split(":", 2)).filter(splittedLine -> splittedLine.length >= 2).forEach(splittedLine -> requestMap.put(splittedLine[0], splittedLine[1].trim()));
 
@@ -274,12 +271,12 @@ public class Webserver {
 
     private Map<String, String> parsePostData(String raw) {
         try {
-            String[] splittedRawRequest = raw.split("&");
+            var splittedRawRequest = raw.split("&");
 
-            Map<String, String> requestMap = new TreeMap<>();
+            var requestMap = new TreeMap<String, String>();
 
-            for (String rawSplittedRawRequest : splittedRawRequest) {
-                String[] splittedSplittedRawRequest = rawSplittedRawRequest.split("=", 2);
+            for (var rawSplittedRawRequest : splittedRawRequest) {
+                var splittedSplittedRawRequest = rawSplittedRawRequest.split("=", 2);
 
                 if (splittedSplittedRawRequest.length >= 2) {
                     requestMap.put(splittedSplittedRawRequest[0], splittedSplittedRawRequest[1]);
@@ -293,7 +290,7 @@ public class Webserver {
     }
 
     private Map<String, String> parsePutData(List<String> raw) {
-        Map<String, String> requestMap = new TreeMap<>();
+        var requestMap = new TreeMap<String, String>();
 
         boolean read = false;
         int i = 0;
@@ -313,28 +310,28 @@ public class Webserver {
     }
 
     public static KeyStore generateKeyStore(File certificate, File key) throws Exception {
-        KeyStore keyStore = KeyStore.getInstance("JKS");
+        var keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, null);
 
-        CertificateFactory fact = CertificateFactory.getInstance("X.509");
-        FileInputStream is = new FileInputStream(certificate);
+        var fact = CertificateFactory.getInstance("X.509");
+        var is = new FileInputStream(certificate);
         PrivateKey privateKey = null;
 
-        Pattern pattern = Pattern.compile("-+BEGIN\\s+.*PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+([a-z0-9+/=\\r\\n]+)-+END\\s+.*PRIVATE\\s+KEY[^-]*-+", CASE_INSENSITIVE);
-        String keyFile = new String(Files.readAllBytes(key.toPath()), StandardCharsets.UTF_8);
-        Matcher matcher = pattern.matcher(keyFile);
+        var pattern = Pattern.compile("-+BEGIN\\s+.*PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+([a-z0-9+/=\\r\\n]+)-+END\\s+.*PRIVATE\\s+KEY[^-]*-+", CASE_INSENSITIVE);
+        var keyFile = new String(Files.readAllBytes(key.toPath()), StandardCharsets.UTF_8);
+        var matcher = pattern.matcher(keyFile);
         matcher.find();
-        String matched = matcher.group(1);
-        byte[] decodedKey = Base64.getMimeDecoder().decode(matched);
+        var matched = matcher.group(1);
+        var decodedKey = Base64.getMimeDecoder().decode(matched);
 
         try {
-            PKCS8EncodedKeySpec encodedKeySpec = new PKCS8EncodedKeySpec(decodedKey);
+            var encodedKeySpec = new PKCS8EncodedKeySpec(decodedKey);
 
             try {
-                KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                var keyFactory = KeyFactory.getInstance("RSA");
                 privateKey = keyFactory.generatePrivate(encodedKeySpec);
             } catch (InvalidKeySpecException ignore) {
-                KeyFactory keyFactory = KeyFactory.getInstance("EC");
+                var keyFactory = KeyFactory.getInstance("EC");
                 privateKey = keyFactory.generatePrivate(encodedKeySpec);
             }
         } catch (Exception ex) {

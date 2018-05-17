@@ -10,7 +10,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,11 +76,11 @@ public class UnetkitServerSecure {
                             try {
                                 in = new ObjectInputStream(socket.getInputStream());
                                 out = new ObjectOutputStream(socket.getOutputStream());
-                                String client = socket.getInetAddress().getHostAddress();
+                                var client = socket.getInetAddress().getHostAddress();
 
-                                String keyStoreName = client + " on " + port;
+                                var keyStoreName = client + " on " + port;
                                 SecretKey key = null;
-                                boolean hasKey = keyStore.containsKey(keyStoreName);
+                                var hasKey = keyStore.containsKey(keyStoreName);
                                 byte[] keyHash;
 
                                 if (hasKey) {
@@ -92,12 +91,12 @@ public class UnetkitServerSecure {
                                 }
                                 out.writeObject(keyHash);
 
-                                byte[] clientKey = (byte[]) in.readObject();
-                                boolean correctKey = Arrays.equals(clientKey, keyHash);
+                                var clientKey = (byte[]) in.readObject();
+                                var correctKey = Arrays.equals(clientKey, keyHash);
 
                                 if (!correctKey) {
-                                    KeyPair keyPair = Crypter.generateECKeyPair(ECKeySize.LOWEST.getSize());
-                                    PublicKey publicKey = (PublicKey) in.readObject();
+                                    var keyPair = Crypter.generateECKeyPair(ECKeySize.LOWEST.getSize());
+                                    var publicKey = (PublicKey) in.readObject();
 
                                     out.writeObject(keyPair.getPublic());
                                     key = Crypter.generateEC("SHA3-224", AESKeySize.LOW.getSize(), keyPair.getPrivate(), publicKey);
@@ -108,11 +107,11 @@ public class UnetkitServerSecure {
                                     keyStore.put(keyStoreName, key);
                                 }
 
-                                byte[] decryptedObject = Crypter.decrypt("AES", (byte[]) in.readObject(), key);
-                                Object object = Crypter.toObject(decryptedObject);
+                                var decryptedObject = Crypter.decrypt("AES", (byte[]) in.readObject(), key);
+                                var object = Crypter.toObject(decryptedObject);
 
-                                byte[] byteResponse = Crypter.toByteArray(this.handler.process(object));
-                                byte[] encryptedResponse = Crypter.encrypt("AES", byteResponse, key);
+                                var byteResponse = Crypter.toByteArray(this.handler.process(object));
+                                var encryptedResponse = Crypter.encrypt("AES", byteResponse, key);
 
                                 out.writeObject(encryptedResponse);
                                 out.flush();
@@ -184,7 +183,7 @@ public class UnetkitServerSecure {
     private void startThreads(int threads) {
         for (int i = 0; i < threads; i++) {
             int id = i;
-            ArrayList<Runnable> myTasks = new ArrayList<>();
+            var myTasks = new ArrayList<Runnable>();
             tasks.put(id, myTasks);
 
             new Thread(() -> {
@@ -196,7 +195,7 @@ public class UnetkitServerSecure {
                         }
                     } else {
                         try {
-                            Runnable task = myTasks.get(0);
+                            var task = myTasks.get(0);
                             myTasks.remove(task);
                             task.run();
                         } catch (NullPointerException ex) {
@@ -210,9 +209,9 @@ public class UnetkitServerSecure {
     }
 
     private void sortTask(Runnable task) {
-        int threadId = 0;
-        int taskCount = Integer.MAX_VALUE;
-        for (Map.Entry<Integer, ArrayList<Runnable>> lists : tasks.entrySet()) {
+        var threadId = 0;
+        var taskCount = Integer.MAX_VALUE;
+        for (var lists : tasks.entrySet()) {
             if (lists.getValue().size() < taskCount) {
                 threadId = lists.getKey();
             }

@@ -10,7 +10,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
-import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.TreeMap;
@@ -64,9 +63,9 @@ public class UnetkitClientSecure {
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
 
-            String keyStoreName = host + " on " + port;
+            var keyStoreName = host + " on " + port;
             SecretKey key = null;
-            boolean hasKey = keyStore.containsKey(keyStoreName);
+            var hasKey = keyStore.containsKey(keyStoreName);
             byte[] keyHash;
 
             if (hasKey) {
@@ -76,16 +75,16 @@ public class UnetkitClientSecure {
                 keyHash = "client".getBytes();
             }
 
-            byte[] clientKey = (byte[]) in.readObject();
-            boolean correctKey = Arrays.equals(clientKey, keyHash);
+            var clientKey = (byte[]) in.readObject();
+            var correctKey = Arrays.equals(clientKey, keyHash);
 
             out.writeObject(keyHash);
 
             if (!correctKey) {
-                KeyPair keyPair = Crypter.generateECKeyPair(ECKeySize.LOWEST.getSize());
+                var keyPair = Crypter.generateECKeyPair(ECKeySize.LOWEST.getSize());
                 out.writeObject(keyPair.getPublic());
 
-                PublicKey publicKey = (PublicKey) in.readObject();
+                var publicKey = (PublicKey) in.readObject();
                 key = Crypter.generateEC("SHA3-224", AESKeySize.LOW.getSize(), keyPair.getPrivate(), publicKey);
 
                 if (hasKey) {
@@ -94,12 +93,12 @@ public class UnetkitClientSecure {
                 keyStore.put(keyStoreName, key);
             }
 
-            byte[] byteObject = Crypter.toByteArray(object);
-            byte[] encryptedObject = Crypter.encrypt("AES", byteObject, key);
+            var byteObject = Crypter.toByteArray(object);
+            var encryptedObject = Crypter.encrypt("AES", byteObject, key);
 
             out.writeObject(encryptedObject);
 
-            byte[] decryptedResponse = Crypter.decrypt("AES", (byte[]) in.readObject(), key);
+            var decryptedResponse = Crypter.decrypt("AES", (byte[]) in.readObject(), key);
             response = Crypter.toObject(decryptedResponse);
         } catch (Exception ex) {
             ex.printStackTrace();

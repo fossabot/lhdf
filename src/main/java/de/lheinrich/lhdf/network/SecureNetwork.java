@@ -122,6 +122,8 @@ public class SecureNetwork {
     }
 
     protected static SecretKey connectTo(String networkId, int networkPort, String host, int port, boolean known, SecretKey key, String authentication, String handlerName, NetworkHandler handler) {
+        var finalKey = key;
+
         try (var socket = new Socket(host, port);
              var out = new ObjectOutputStream(socket.getOutputStream());
              var in = new ObjectInputStream(socket.getInputStream())) {
@@ -143,18 +145,17 @@ public class SecureNetwork {
                 out.writeObject(keyPair.getPublic());
                 out.flush();
 
-                key = Crypter.generateEC(in.readUTF(), in.readInt(), privateKey, publicKey);
+                finalKey = Crypter.generateEC(in.readUTF(), in.readInt(), privateKey, publicKey);
             }
 
-            handler.init(in, out, key);
+            handler.init(in, out, finalKey);
             handler.write(authentication);
             handler.write(handlerName);
             handler.handle();
         } catch (Exception ex) {
             ex.printStackTrace();
-        } finally {
-            return key;
         }
+        return finalKey;
     }
 
     private void handleConnection(Socket socket) {
