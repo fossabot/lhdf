@@ -1,6 +1,6 @@
-# lhdef
+# lhdf
 
-LHeinrich.de Framework
+LHeinrich.de Development Framework
 
 Order Programming:
  - E-Mail: lheinrich@lheinrich.de
