@@ -52,6 +52,7 @@ public class ClientPostgreSQL extends ClientSQL {
         return null;
     }
 
+    @Override
     public Connection getSqlTransactionConnection() {
         try {
             var connection = this.sqlPool.getConnection();
