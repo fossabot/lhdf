@@ -28,32 +28,6 @@ import java.util.TreeMap;
 public abstract class WebserverHandler {
 
     private final Map<String, String> setCookies = new TreeMap<>();
-    private final String contentType;
-
-    /**
-     * Initialize with Content-Type "text/plain"
-     */
-    public WebserverHandler() {
-        this.contentType = "text/plain";
-    }
-
-    /**
-     * Initialize with custom Content-Type
-     *
-     * @param contentType HTML Content-Type String
-     */
-    public WebserverHandler(String contentType) {
-        this.contentType = contentType;
-    }
-
-    /**
-     * Get HTML Content-Type
-     *
-     * @return HTML Content-Type String
-     */
-    public String getContentType() {
-        return contentType;
-    }
 
     /**
      * Set a Cookie
@@ -78,12 +52,13 @@ public abstract class WebserverHandler {
     /**
      * Task handling
      *
+     * @param name     Requested name
      * @param get      HTML GET Header
      * @param head     HTML HEADER
      * @param post_put HTML POST or PUT Header (default is PUT)
      * @param cookies  Cookies sent from client
      * @param clientIp IP Request is from
-     * @return String for Output
+     * @return String array for output (0 = Content-Type, 1 = Content)
      */
-    public abstract String process(Map<String, String> get, Map<String, String> head, Map<String, String> post_put, Map<String, String> cookies, String clientIp);
+    public abstract String[] process(String name, Map<String, String> get, Map<String, String> head, Map<String, String> post_put, Map<String, String> cookies, String clientIp);
 }

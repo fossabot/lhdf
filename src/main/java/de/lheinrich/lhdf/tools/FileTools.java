@@ -44,6 +44,10 @@ public class FileTools {
     }
 
     public static String loadResourceFile(String fileName) {
+        return loadResourceFile(fileName, true);
+    }
+
+    public static String loadResourceFile(String fileName, boolean printError) {
         var fileContent = "";
         var resourceName = "/" + fileName;
         InputStream stream = null;
@@ -62,7 +66,8 @@ public class FileTools {
 
             fileContent = new String(buffer, StandardCharsets.UTF_8);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            if (printError)
+                ex.printStackTrace();
         } finally {
             try {
                 if (stream != null) {

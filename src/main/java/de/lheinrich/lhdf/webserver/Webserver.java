@@ -63,8 +63,8 @@ public class Webserver {
     public Webserver(int bindPort, int bindPortSSL, int threads, int timeout, int maxConnections, KeyStore keyStore) throws Exception {
         handlers.put("not found", new WebserverHandler() {
             @Override
-            public String process(Map<String, String> get, Map<String, String> head, Map<String, String> post_put, Map<String, String> cookies, String clientIp) {
-                return "not found";
+            public String[] process(String name, Map<String, String> get, Map<String, String> head, Map<String, String> post_put, Map<String, String> cookies, String clientIp) {
+                return new String[]{"text/plain", "not found"};
             }
         });
         executor = Executors.newFixedThreadPool(threads);
@@ -129,6 +129,9 @@ public class Webserver {
             var getRequest = (Map<String, String>) getData[2];
             WebserverHandler handler;
 
+            if (handlerName.startsWith("/"))
+                handlerName = handlerName.substring(2);
+
             if (handlers.containsKey(handlerName)) {
                 handler = handlers.get(handlerName);
             } else {
@@ -154,14 +157,14 @@ public class Webserver {
                 headData.remove(cookieName);
             }
 
-            var response = handler.process(getRequest, headData, post_put, cookies, socket.getInetAddress().getHostAddress());
+            var response = handler.process(handlerName, getRequest, headData, post_put, cookies, socket.getInetAddress().getHostAddress());
 
-            out.write("Server: Unetkit (Java)\r\n");
+            out.write("Server: lhdf (Java)\r\n");
             out.write("Access-Control-Allow-Origin: *\r\n");
-            out.write("Content-Type: " + handler.getContentType() + "; charset=utf-8\r\n");
-            out.write("Content-Length: " + response.length() + "\r\n");
+            out.write("Content-Type: " + response[0] + "; charset=utf-8\r\n");
+            out.write("Content-Length: " + response[1].length() + "\r\n");
             out.write(generateCookies(handler.getCookies()) + "\r\n");
-            out.write(response);
+            out.write(response[1]);
             out.flush();
         } catch (IOException ex) {
         } finally {
