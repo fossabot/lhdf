@@ -33,8 +33,8 @@ public class TransactionSQL {
     private final ClientSQL clientSQL;
     private final List<Map.Entry<String, Object[]>> statements = new ArrayList<>();
 
-    public TransactionSQL(ClientSQL mysql) {
-        this.clientSQL = mysql;
+    public TransactionSQL(ClientSQL clientSQL) {
+        this.clientSQL = clientSQL;
     }
 
     public void add(String query, Object... args) {
@@ -60,6 +60,7 @@ public class TransactionSQL {
             } catch (SQLException exRollback) {
                 exRollback.printStackTrace();
             }
+            ex.printStackTrace();
         } finally {
             try {
                 connection.close();
