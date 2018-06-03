@@ -11,7 +11,7 @@
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>https://lheinrich.de/static/public/license/LICENSE.txt</url>
+            <url>https://lheinrich.de/license/LICENSE.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -23,13 +23,6 @@
             <url>https://lheinrich.de</url>
         </developer>
     </developers>
-
-    <distributionManagement>
-        <repository>
-            <id>lheinrich</id>
-            <url>https://mvn.lheinrich.de/repository/public/</url>
-        </repository>
-    </distributionManagement>
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
