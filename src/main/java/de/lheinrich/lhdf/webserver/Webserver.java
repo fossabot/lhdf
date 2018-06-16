@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.*;
@@ -248,7 +249,7 @@ public class Webserver {
                 var splittedSplittedRawRequest = rawSplittedRawRequest.split("=", 2);
 
                 if (splittedSplittedRawRequest.length >= 2) {
-                    requestMap.put(splittedSplittedRawRequest[0], splittedSplittedRawRequest[1]);
+                    requestMap.put(splittedSplittedRawRequest[0], URLDecoder.decode(splittedSplittedRawRequest[1], StandardCharsets.UTF_8));
                 } else {
                     requestMap.put(splittedSplittedRawRequest[0], "");
                 }
@@ -264,7 +265,7 @@ public class Webserver {
         try {
             var requestMap = new TreeMap<String, String>();
 
-            raw.stream().map(line -> line.split(":", 2)).filter(splittedLine -> splittedLine.length >= 2).forEach(splittedLine -> requestMap.put(splittedLine[0], splittedLine[1].trim()));
+            raw.stream().map(line -> line.split(":", 2)).filter(splittedLine -> splittedLine.length >= 2).forEach(splittedLine -> requestMap.put(splittedLine[0], URLDecoder.decode(splittedLine[1].trim(), StandardCharsets.UTF_8)));
 
             return requestMap;
         } catch (ArrayIndexOutOfBoundsException ex) {
@@ -282,7 +283,7 @@ public class Webserver {
                 var splittedSplittedRawRequest = rawSplittedRawRequest.split("=", 2);
 
                 if (splittedSplittedRawRequest.length >= 2) {
-                    requestMap.put(splittedSplittedRawRequest[0], splittedSplittedRawRequest[1]);
+                    requestMap.put(splittedSplittedRawRequest[0], URLDecoder.decode(splittedSplittedRawRequest[1], StandardCharsets.UTF_8));
                 }
             }
 
