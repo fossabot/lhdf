@@ -2,10 +2,9 @@ package de.lheinrich.lhdf.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Scanner;
 
 /*
  * Copyright (c) 2018 Lennart Heinrich
@@ -48,37 +47,21 @@ public class FileTools {
     }
 
     public static String loadResourceFile(String fileName, boolean printError) {
-        var fileContent = "";
-        var resourceName = "/" + fileName;
-        InputStream stream = null;
-        OutputStream resStreamOut = null;
+        var result = new StringBuilder();
 
-        try {
-            stream = FileTools.class.getResourceAsStream(resourceName);
+        var classLoader = FileTools.class.getClassLoader();
+        var file = new File(classLoader.getResource(fileName).getFile());
 
-            if (stream == null) {
-                throw new IOException("Cannot get resource \"" + resourceName + "\" from Jar file.");
+        try (var scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                var line = scanner.nextLine();
+                result.append(line).append("\n");
             }
-
-            var readBytes = stream.available();
-            var buffer = new byte[readBytes];
-            stream.read(buffer, 0, readBytes);
-
-            fileContent = new String(buffer, StandardCharsets.UTF_8);
         } catch (IOException ex) {
             if (printError)
                 ex.printStackTrace();
-        } finally {
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-                if (resStreamOut != null) {
-                    resStreamOut.close();
-                }
-            } catch (IOException ex) {
-            }
         }
-        return fileContent;
+
+        return result.toString();
     }
 }

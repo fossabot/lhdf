@@ -5,7 +5,7 @@
 
     <groupId>de.lheinrich</groupId>
     <artifactId>lhdf</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -47,6 +47,8 @@
                 <directory>src/test/resources</directory>
             </testResource>
         </testResources>
+
+        <!--
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -75,6 +77,7 @@
                 </executions>
             </plugin>
         </plugins>
+        -->
     </build>
 
     <dependencies>

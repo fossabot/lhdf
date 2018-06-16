@@ -160,14 +160,10 @@ public class Webserver {
 
             var response = handler.process(handlerName, getRequest, headData, post_put, cookies, socket.getInetAddress().getHostAddress());
 
-            out.write("Server: lhdf (Java)\r\n");
-            out.write("Access-Control-Allow-Origin: *\r\n");
-            out.write("Content-Type: " + response[0] + "; charset=utf-8\r\n");
-            out.write("Content-Length: " + response[1].length() + "\r\n");
-            out.write(generateCookies(handler.getCookies()) + "\r\n");
-            out.write(response[1]);
+            out.write("Server: lhdf\r\nContent-Type: " + response[0] + "; charset=utf-8\r\nContent-Length: " + response[1].length() + "\r\n" + generateCookies(handler.getCookies()) + "\r\n" + response[1]);
             out.flush();
         } catch (IOException ex) {
+            ex.printStackTrace();
         } finally {
             try {
                 socket.close();
@@ -265,7 +261,7 @@ public class Webserver {
         try {
             var requestMap = new TreeMap<String, String>();
 
-            raw.stream().map(line -> line.split(":", 2)).filter(splittedLine -> splittedLine.length >= 2).forEach(splittedLine -> requestMap.put(splittedLine[0], URLDecoder.decode(splittedLine[1].trim(), StandardCharsets.UTF_8)));
+            raw.stream().map(line -> line.split(":", 2)).filter(splittedLine -> splittedLine.length >= 2).forEach(splittedLine -> requestMap.put(splittedLine[0], splittedLine[1].trim()));
 
             return requestMap;
         } catch (ArrayIndexOutOfBoundsException ex) {
